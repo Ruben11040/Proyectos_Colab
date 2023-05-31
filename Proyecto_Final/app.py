@@ -6,6 +6,8 @@ import numpy as np
 # Crear una instancia de la aplicación Flask
 app = Flask(__name__)
 
+scaler = joblib.load(
+    'C:/Users/ruben/Documents/proyectos_VS_ CEIABDTA/Proyecto_Final/modelos/scaler.pkl')
 modelh1n1 = joblib.load(
     'C:/Users/ruben/Documents/proyectos_VS_ CEIABDTA/Proyecto_Final/modelos/h1n1.pkl')
 modelseasonal = joblib.load(
@@ -14,12 +16,12 @@ modelseasonal = joblib.load(
     # Elegir las variables que van en cada uno
 def model_prediction_h1n1(h1n1_in, model):
     h1n1_in = np.asarray(h1n1_in).reshape(1, -1)
-    h1n1_in = model.transform(h1n1_in)
+    h1n1_in = scaler.transform(h1n1_in)
     return model.predict(h1n1_in)
 
 def model_prediction_seasonal(seasonal_in, model):
     seasonal_in = np.asarray(seasonal_in).reshape(1, -1)
-    seasonal_in = model.transform(seasonal_in)
+    seasonal_in = scaler.transform(seasonal_in)
     return model.predict(seasonal_in)
 
 class Request(BaseModel):
@@ -47,73 +49,87 @@ class Request(BaseModel):
     respuesta22: int
     respuesta23: int
     respuesta24: int
+    respuesta25: int
+    respuesta26: int
 
-# Definir una ruta y una función controladora
 
-
-@app.route('/', methods=['GET', 'POST'] )
+@app.route('/', methods=['GET'])
 def home():
 
-    if request.method == 'POST':
-
-        h1n1_in = [
-            np.int_(request.respuesta1),
-            np.int_(request.respuesta2),
-            np.int_(request.respuesta3),
-            np.int_(request.respuesta4),
-            np.int_(request.respuesta5),
-            np.int_(request.respuesta6),
-            np.int_(request.respuesta7),
-            np.int_(request.respuesta8),
-            np.int_(request.respuesta9),
-            np.int_(request.respuesta10),
-            np.int_(request.respuesta11),
-            np.int_(request.respuesta12),
-            np.int_(request.respuesta13),
-            np.int_(request.respuesta14),
-            np.int_(request.respuesta15),
-            np.int_(request.respuesta16),
-            np.int_(request.respuesta17),
-            np.int_(request.respuesta18),
-            np.int_(request.respuesta19),
-            np.int_(request.respuesta20),
-            np.int_(request.respuesta21),
-            np.int_(request.respuesta22),
-            np.int_(request.respuesta23),
-            np.int_(request.respuesta24)]
-
-        seasonal_in = [
-            np.int_(request.respuesta1),
-            np.int_(request.respuesta2),
-            np.int_(request.respuesta3),
-            np.int_(request.respuesta4),
-            np.int_(request.respuesta5),
-            np.int_(request.respuesta6),
-            np.int_(request.respuesta7),
-            np.int_(request.respuesta8),
-            np.int_(request.respuesta9),
-            np.int_(request.respuesta10),
-            np.int_(request.respuesta11),
-            np.int_(request.respuesta12),
-            np.int_(request.respuesta13),
-            np.int_(request.respuesta14),
-            np.int_(request.respuesta15),
-            np.int_(request.respuesta16),
-            np.int_(request.respuesta17),
-            np.int_(request.respuesta18),
-            np.int_(request.respuesta19),
-            np.int_(request.respuesta20),
-            np.int_(request.respuesta21),
-            np.int_(request.respuesta22),
-            np.int_(request.respuesta23),
-            np.int_(request.respuesta24)]
-
-        predictH = model_prediction_h1n1(h1n1_in, modelh1n1)
-        predictS = model_prediction_seasonal(seasonal_in, modelseasonal)
-
-        return [int(predictH[0]),int(predictS[0]), request.model]
     return render_template('index.html')
 
+# Define a route that receives the input data and returns the prediction
+@app.route ('/predict', methods=['POST'])
+def predict ():
+    # Get the input data from the form
+
+    h1n1_in = [
+        np.int_(request.form["respuesta1"]),
+        np.int_(request.form["respuesta2"]),
+        np.int_(request.form["respuesta3"]),
+        np.int_(request.form["respuesta4"]),
+        np.int_(request.form["respuesta5"]),
+        np.int_(request.form["respuesta6"]),
+        np.int_(request.form["respuesta8"]),
+        np.int_(request.form["respuesta9"]),
+        np.int_(request.form["respuesta10"]),
+        np.int_(request.form["respuesta11"]),
+        np.int_(request.form["respuesta12"]),
+        np.int_(request.form["respuesta13"]),
+        np.int_(request.form["respuesta17"]),
+        np.int_(request.form["respuesta18"]),
+        np.int_(request.form["respuesta19"]),
+        np.int_(request.form["respuesta20"]),
+        np.int_(request.form["respuesta21"]),
+        np.int_(request.form["respuesta22"]),
+        np.int_(request.form["respuesta23"]),
+        np.int_(request.form["respuesta24"]),
+        np.int_(request.form["respuesta25"]),
+        np.int_(request.form["respuesta26"])]
+
+    seasonal_in = [
+        np.int_(request.form["respuesta1"]),
+        np.int_(request.form["respuesta2"]),
+        np.int_(request.form["respuesta3"]),
+        np.int_(request.form["respuesta4"]),
+        np.int_(request.form["respuesta5"]),
+        np.int_(request.form["respuesta7"]),
+        np.int_(request.form["respuesta8"]),
+        np.int_(request.form["respuesta9"]),
+        np.int_(request.form["respuesta10"]),
+        np.int_(request.form["respuesta14"]),
+        np.int_(request.form["respuesta15"]),
+        np.int_(request.form["respuesta16"]),
+        np.int_(request.form["respuesta17"]),
+        np.int_(request.form["respuesta18"]),
+        np.int_(request.form["respuesta19"]),
+        np.int_(request.form["respuesta20"]),
+        np.int_(request.form["respuesta21"]),
+        np.int_(request.form["respuesta22"]),
+        np.int_(request.form["respuesta23"]),
+        np.int_(request.form["respuesta24"]),
+        np.int_(request.form["respuesta25"]),
+        np.int_(request.form["respuesta26"])]
+    
+    print(h1n1_in)
+    print(seasonal_in)
+    # Make a prediction using the model
+    predictH = model_prediction_h1n1(h1n1_in, modelh1n1)
+    predictS = model_prediction_seasonal(seasonal_in, modelseasonal)
+
+    if (predictH == 0):
+      sol1 = 'No'
+    else:
+      sol1 = 'Si'
+    
+
+    if (predictS == 0):
+      sol2 = 'No'
+    else:
+      sol2 = 'Si'
+
+    # Return the prediction as a string
+    return render_template('index.html', resultados = True, sol1 = sol1, sol2 = sol2)
 
 # Iniciar el servidor web de Flask
 if __name__ == '__main__':
